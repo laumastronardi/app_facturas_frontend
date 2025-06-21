@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer utilities {
+  .animate-flash {
+    animation: flash 1s ease-in-out;
+  }
+
+  @keyframes flash {
+    0%, 100% { background-color: transparent; }
+    50% { background-color: #14532d; } /* verde oscuro */
+  }
+}
+
+body {
+  @apply dark:bg-neutral-900 dark:text-neutral-100;
+}
+
+html, body {
+  @apply bg-brand-black text-brand-gray;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
