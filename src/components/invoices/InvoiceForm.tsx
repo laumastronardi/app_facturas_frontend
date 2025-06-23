@@ -5,7 +5,7 @@ interface InvoiceFormProps {
 }
 
 export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
-  const [description, setDescription] = useState('');
+  const [date, setDate] = useState('');
   const [amount, setAmount] = useState('');
   const [type, setType] = useState<'A' | 'X'>('A');
   const [vat, setVat] = useState<'21' | '10.5'>('21');
@@ -15,7 +15,7 @@ export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
     e.preventDefault();
     const parsedAmount = parseFloat(amount);
     const data = {
-      description,
+      date,
       amount: parsedAmount,
       type,
       vat: type === 'A' ? parseFloat(vat) : undefined,
@@ -27,18 +27,18 @@ export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
   return (
     <form onSubmit={handleSubmit} className="bg-neutral-900 p-6 rounded-2xl shadow-lg max-w-xl mx-auto space-y-4 text-white">
       <div>
-        <label className="block text-sm mb-1">Description</label>
+        <label className="block text-sm mb-1">Fecha</label>
         <input
           type="text"
           className="w-full p-2 bg-neutral-800 border border-neutral-700 rounded"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
           required
         />
       </div>
 
       <div>
-        <label className="block text-sm mb-1">Amount</label>
+        <label className="block text-sm mb-1">Monto sin IVA</label>
         <input
           type="number"
           className="w-full p-2 bg-neutral-800 border border-neutral-700 rounded"
@@ -49,7 +49,7 @@ export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm mb-1">Invoice Type</label>
+        <label className="block text-sm mb-1">Tipo de factura</label>
         <select
           className="w-full p-2 bg-neutral-800 border border-neutral-700 rounded"
           value={type}
@@ -61,7 +61,7 @@ export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm mb-1">VAT</label>
+        <label className="block text-sm mb-1">IVA</label>
         <select
           className="w-full p-2 bg-neutral-800 border border-neutral-700 rounded"
           value={vat}
@@ -74,7 +74,7 @@ export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm mb-1">Supplier ID</label>
+        <label className="block text-sm mb-1">Proveedor</label>
         <input
           type="text"
           className="w-full p-2 bg-neutral-800 border border-neutral-700 rounded"
@@ -88,7 +88,7 @@ export default function InvoiceForm({ onSubmit }: InvoiceFormProps) {
         type="submit"
         className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-xl w-full"
       >
-        Save Invoice
+        Guardar factura
       </button>
     </form>
   );
