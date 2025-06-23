@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 export const invoiceSchema = z.object({
-  description: z.string().min(1),
   amount: z.coerce.number().positive(),
   type: z.enum(['A', 'X']),
   vat: z
