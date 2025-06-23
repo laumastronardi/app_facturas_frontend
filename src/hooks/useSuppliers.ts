@@ -1,7 +1,7 @@
 // src/hooks/useSuppliers.ts
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
-import type { Supplier } from '../types/supplier'; // asegurate de tener este tipo
+import type { Supplier } from '../types/supplier';
 
 export function useSuppliers() {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -14,5 +14,10 @@ export function useSuppliers() {
       .finally(() => setLoading(false));
   }, []);
 
-  return { suppliers, loading }; // 👈 devolvemos un objeto
+  return { suppliers, loading };
+}
+
+export async function fetchSuppliers() {
+  const response = await api.get('/suppliers');
+  return response.data;
 }

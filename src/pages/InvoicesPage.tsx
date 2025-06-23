@@ -1,26 +1,26 @@
+// src/pages/InvoicePageWrapper.tsx
 import { useState } from 'react';
-import PaginationControls from '../components/PaginationControl';
-import { useInvoices, markInvoiceAsPaid } from '../hooks/useInvoices';
+import useSWRImmutable from 'swr/immutable';
 import type { Invoice } from '../types/invoice';
+import { markInvoiceAsPaid, useInvoices } from '../hooks/useInvoices';
+import { fetchSuppliers } from '../hooks/useSuppliers';
 import InvoiceFilterForm from '../components/invoices/InvoiceFilterForm';
 import InvoiceTableRow from '../components/invoices/InvoiceTableRow';
+import PaginationControls from '../components/PaginationControl';
 import MarkAsPaidModal from '../components/invoices/MarkAsPaidModal';
+import { normalizeFilters } from '../utils/normalizeFilters';
 
-export default function InvoiceTable() {
+export default function InvoicePageWrapper() {
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [pagination, setPagination] = useState({ page: 1, perPage: 10 });
-  const { invoices, meta, refetch } = useInvoices(filters, pagination);
   const [animatedRowId, setAnimatedRowId] = useState<number | null>(null);
-
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
 
-  const handleOpenModal = (invoice: Invoice) => {
-    setSelectedInvoice(invoice);
-    setModalOpen(true);
-  };
+  const { invoices, meta, refetch } = useInvoices(filters, pagination);
+  const { data: suppliers = [] } = useSWRImmutable('/suppliers', fetchSuppliers);
 
-    const handleConfirmPaid = async (paymentDate: string) => {
+  const handleConfirmPaid = async (paymentDate: string) => {
     if (!selectedInvoice) return;
     await markInvoiceAsPaid(selectedInvoice.id, paymentDate);
     setAnimatedRowId(selectedInvoice.id);
@@ -30,7 +30,17 @@ export default function InvoiceTable() {
 
   return (
     <div className="px-4 md:px-10 max-w-6xl mx-auto">
-      <InvoiceFilterForm onFilter={setFilters} />
+      <h1 className="text-5xl font-bold text-white text-center my-8">Listado de Facturas</h1>
+
+      <InvoiceFilterForm
+        onFilter={(newFilters) => {
+          // 👉 Al aplicar filtro, reseteo siempre a página 1
+          setFilters(normalizeFilters(newFilters));
+          setPagination((prev) => ({ ...prev, page: 1 }));
+        }}
+        suppliers={suppliers}
+      />
+
       <table className="w-full text-sm">
         <thead>
           <tr>
@@ -43,26 +53,31 @@ export default function InvoiceTable() {
           </tr>
         </thead>
         <tbody>
-          {Array.isArray(invoices) && invoices.map((invoice: Invoice) => (
+          {invoices.map((invoice) => (
             <InvoiceTableRow
               key={invoice.id}
               invoice={invoice}
               animatedRowId={animatedRowId}
               setAnimatedRowId={setAnimatedRowId}
               refetch={refetch}
-              onMarkAsPaid={() => handleOpenModal(invoice)}
+              onMarkAsPaid={() => {
+                setSelectedInvoice(invoice);
+                setModalOpen(true);
+              }}
             />
           ))}
         </tbody>
       </table>
+
       <PaginationControls
-        page={meta.page}
+        page={pagination.page}
         perPage={meta.perPage}
         total={meta.total}
-        onPageChange={(newPage: number) =>
+        onPageChange={(newPage) =>
           setPagination((prev) => ({ ...prev, page: newPage }))
         }
       />
+
       <MarkAsPaidModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

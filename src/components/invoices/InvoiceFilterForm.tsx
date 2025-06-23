@@ -1,32 +1,37 @@
 import { useForm } from 'react-hook-form';
+import SupplierFilter from '../suppliers/SuppliersFilter';
+import type { Supplier } from '../../types/supplier';
+import { statusOptions, type FilterValues } from '../../types/filter_values';
+import MultiSelectDropdown from '../MultipleSelectDropdown';
 
-type FilterValues = {
-  status?: string;
-  type?: string;
-  fromDate?: string;
-  toDate?: string;
-};
+export default function InvoiceFilterForm({ onFilter, suppliers }: { onFilter: (filters: FilterValues) => void; suppliers: Supplier[]; }) {
+  const { register, handleSubmit, reset, setValue, watch } = useForm<FilterValues>();
+  const status = watch('status') ?? [];
 
-export default function InvoiceFilterForm({ onFilter }: { onFilter: (filters: FilterValues) => void }) {
-  const { register, handleSubmit, reset } = useForm<FilterValues>();
+  const onSubmit = (data: FilterValues) => {
+    const query: Record<string, string> = Object.fromEntries(
+      Object.entries(data)
+        .filter(([_, value]) => value !== undefined && value !== null && value !== '')
+        .map(([key, value]) => [key, String(value)])
+    );
 
-  const onSubmit = (data: any) => {
-    const query = {
-      ...data,
-      page: '1', // resetear página cuando aplicás filtros
-      limit: '10',
-    };
-    onFilter(query); // esto ejecuta setFilters en el padre
+    onFilter(query); // esto lo maneja el padre
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-wrap gap-4 mb-6">
-      <select {...register('status')} className="bg-neutral-800 p-2 rounded text-white">
-        <option value="">Estado</option>
-        <option value="to_pay">A pagar</option>
-        <option value="prepared">Preparada</option>
-        <option value="paid">Pagada</option>
-      </select>
+      <MultiSelectDropdown<string>
+        options={statusOptions}
+        value={status}
+        onChange={(val) => setValue('status', val)}
+        placeholder="Filtrar estado"
+      />
+
+      <SupplierFilter
+        suppliers={suppliers}
+        selectedSupplierId={watch('supplierId') ?? null}
+        onChange={(id) => setValue('supplierId', id)}
+      />
 
       <select {...register('type')} className="bg-neutral-800 p-2 rounded text-white">
         <option value="">Tipo</option>

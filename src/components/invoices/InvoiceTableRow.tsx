@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import type { Invoice } from '../../types/invoice';
-import { markInvoiceAsPaid } from '../../hooks/useInvoices';
 import { statusColor, statusText } from '../../helpers/StatusFormatter';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Wrench } from 'lucide-react';
+import { useInvoiceActions } from '../../hooks/useInvoicesActions';
 
 type Props = {
   invoice: Invoice;
@@ -15,21 +15,11 @@ type Props = {
 export default function InvoiceTableRow({ invoice, animatedRowId, setAnimatedRowId, refetch, onMarkAsPaid }: Props) {
   const [showDateInput, setShowDateInput] = useState(false);
   const [paymentDate, setPaymentDate] = useState(() => new Date().toISOString().split('T')[0]);
-  const [loading, setLoading] = useState(false);
 
-  const handleMarkAsPaid = async () => {
-    try {
-      setLoading(true);
-      await markInvoiceAsPaid(invoice.id, paymentDate);
-      setAnimatedRowId(invoice.id);
-      refetch(); // Refetch invoices to update the list
-      setTimeout(() => setAnimatedRowId(null), 1000);
-    } catch (err) {
-      console.error('Error al marcar como pagada', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { loading, handleMarkAsPaid, handleMarkAsPrepared } = useInvoiceActions({
+    setAnimatedRowId,
+    refetch,
+  });
 
   const isAnimated = animatedRowId === invoice.id;
 
@@ -47,6 +37,16 @@ export default function InvoiceTableRow({ invoice, animatedRowId, setAnimatedRow
       <td className="p-3">
         {invoice.status !== 'paid' && (
           <div className="flex items-center gap-2">
+            {invoice.status === 'to_pay' && (
+              <button
+                onClick={() => handleMarkAsPrepared(invoice.id)}
+                className="bg-yellow-600 hover:bg-yellow-700 p-1 rounded text-white text-sm"
+                title="Marcar como preparada"
+              >
+                <Wrench className="w-4 h-4" />
+              </button>
+            )}
+            
             {showDateInput ? (
               <>
                 <input
@@ -56,7 +56,7 @@ export default function InvoiceTableRow({ invoice, animatedRowId, setAnimatedRow
                   onChange={(e) => setPaymentDate(e.target.value)}
                 />
                 <button
-                  onClick={handleMarkAsPaid}
+                  onClick={() => handleMarkAsPaid(invoice.id, paymentDate)}
                   disabled={loading}
                   className="bg-green-600 hover:bg-green-700 px-2 py-1 rounded text-white text-sm"
                 >
@@ -64,13 +64,13 @@ export default function InvoiceTableRow({ invoice, animatedRowId, setAnimatedRow
                 </button>
               </>
             ) : (
-                <button
-                  onClick={() => onMarkAsPaid(invoice)}
-                  className="bg-blue-600 hover:bg-blue-700 p-1 rounded text-white"
-                  title="Marcar como pagada"
-                >
-                  <CheckCircle className="w-4 h-4" />
-                </button>
+              <button
+                onClick={() => onMarkAsPaid(invoice)}
+                className="bg-green-600 hover:bg-green-700 p-1 rounded text-white"
+                title="Marcar como pagada"
+              >
+                <CheckCircle className="w-4 h-4" />
+              </button>
             )}
           </div>
         )}
