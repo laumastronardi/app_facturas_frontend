@@ -13,7 +13,7 @@ type Props = {
 };
 
 export default function InvoiceTableRow({ invoice, animatedRowId, setAnimatedRowId, refetch, onMarkAsPaid }: Props) {
-  const [showDateInput, setShowDateInput] = useState(false);
+  const [showDateInput] = useState(false);
   const [paymentDate, setPaymentDate] = useState(() => new Date().toISOString().split('T')[0]);
 
   const { loading, handleMarkAsPaid, handleMarkAsPrepared } = useInvoiceActions({
