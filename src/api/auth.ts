@@ -65,6 +65,12 @@ export const getProfile = async (): Promise<User> => {
     }
     throw new Error('Failed to get profile');
   }
-  
-  return res.json();
+
+  // Solo intentar parsear JSON si hay contenido
+  const text = await res.text();
+  if (!text) {
+    throw new Error('Empty response from profile endpoint');
+  }
+
+  return JSON.parse(text);
 }; 
