@@ -21,9 +21,7 @@ const schema = z.object({
   status: z.enum(['to_pay', 'prepared', 'paid']),
   supplierId: z.coerce.number().int().positive(),
   type: z.enum(['A', 'X']),
-}).superRefine(() => {
-  // Removed VAT validation since we now have automatic calculation
-});
+}).superRefine(() => {});
 
 export type InvoiceFormData = z.infer<typeof schema>;
 
@@ -66,8 +64,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   useEffect(() => {
     api
       .get<Supplier[]>('/suppliers')
-      .then((res) => setSuppliers(res.data))
-      .catch((err) => console.error('Error loading suppliers', err));
+      .then((res) => setSuppliers(res.data));
   }, []);
 
   return (
