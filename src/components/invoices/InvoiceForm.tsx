@@ -33,7 +33,7 @@ const schema = z.object({
   status: z.enum(['to_pay', 'prepared', 'paid']),
   supplierId: z.coerce.number().int().positive(),
   type: z.enum(['A', 'X']),
-}).superRefine((data, ctx) => {
+}).superRefine(() => {
   // Removed VAT validation since we now have automatic calculation
 });
 
