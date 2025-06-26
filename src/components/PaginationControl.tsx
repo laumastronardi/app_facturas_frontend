@@ -9,8 +9,6 @@ type Props = {
 export default function PaginationControls({ page, total, perPage, onPageChange }: Props) {
   const totalPages = Math.ceil(total / perPage);
 
-  if (totalPages <= 1) return null;
-
   const renderPageNumbers = () => {
     const pages = [];
     const delta = 2;

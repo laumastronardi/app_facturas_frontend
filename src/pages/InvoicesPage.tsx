@@ -11,13 +11,12 @@ import MarkAsPaidModal from '../components/invoices/MarkAsPaidModal';
 import { normalizeFilters } from '../utils/normalizeFilters';
 
 export default function InvoicePageWrapper() {
-  const [filters, setFilters] = useState<Record<string, string>>({});
-  const [pagination, setPagination] = useState({ page: 1, perPage: 10 });
+  const [filters, setFilters] = useState<{ [key: string]: string }>({ page: '1', perPage: '10' });
   const [animatedRowId, setAnimatedRowId] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
 
-  const { invoices, loading, error, pagination: invoicesPagination, refetch } = useInvoices(filters);
+  const { invoices, pagination: invoicesPagination, refetch } = useInvoices(filters);
   const { data: suppliers = [] } = useSWRImmutable('/suppliers', fetchSuppliers);
 
   const handleConfirmPaid = async (paymentDate: string) => {
@@ -36,7 +35,6 @@ export default function InvoicePageWrapper() {
         onFilter={(newFilters) => {
           // 👉 Al aplicar filtro, reseteo siempre a página 1
           setFilters(normalizeFilters(newFilters));
-          setPagination((prev) => ({ ...prev, page: 1 }));
         }}
         suppliers={suppliers}
       />
@@ -70,11 +68,11 @@ export default function InvoicePageWrapper() {
       </table>
 
       <PaginationControls
-        page={invoicesPagination?.meta?.page ?? 1}
-        perPage={invoicesPagination?.meta?.perPage ?? 10}
+        page={Number(filters.page) || 1}
+        perPage={Number(filters.perPage) || 10}
         total={invoicesPagination?.meta?.total ?? 0}
         onPageChange={(newPage) =>
-          setPagination((prev) => ({ ...prev, page: newPage }))
+          setFilters((prev) => ({ ...prev, page: String(newPage) }))
         }
       />
 

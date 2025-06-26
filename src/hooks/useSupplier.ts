@@ -3,12 +3,6 @@ import { useState } from 'react';
 import api from '../api/axios';
 import type { Supplier } from '../types/supplier';
 
-interface CreateSupplierInput {
-  name: string;
-  cbu?: string;
-  paymentTerm?: number;
-}
-
 export function useSupplier() {
   const [loading, setLoading] = useState(false);
 
