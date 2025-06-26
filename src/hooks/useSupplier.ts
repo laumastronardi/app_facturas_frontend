@@ -9,27 +9,18 @@ interface CreateSupplierInput {
   paymentTerm?: number;
 }
 
-export function useCreateSupplier() {
+export function useSupplier() {
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const createSupplier = async (data: CreateSupplierInput): Promise<Supplier | null> => {
+  const createSupplier = async (supplierData: Omit<Supplier, 'id'>) => {
     setLoading(true);
-    setSuccess(false);
-    setError(null);
-
     try {
-      const res = await api.post<Supplier>('/suppliers', data);
-      setSuccess(true);
-      return res.data;
-    } catch (err: any) {
-      setError(err?.response?.data?.message || 'Error creating supplier');
-      return null;
+      const response = await api.post('/suppliers', supplierData);
+      return response.data;
     } finally {
       setLoading(false);
     }
   };
 
-  return { createSupplier, loading, success, error };
+  return { createSupplier, loading };
 }

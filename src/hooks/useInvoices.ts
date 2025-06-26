@@ -1,44 +1,43 @@
 // src/hooks/useInvoices.ts
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../api/axios';
-import type { PaginationMeta } from '../types/pagination';
 import type { Invoice } from '../types/invoice';
+import type { FilterValues } from '../types/filter_values';
+import type { PaginatedResponse } from '../types/pagination';
+import { normalizeFilters } from '../utils/normalizeFilters';
 
-export function useInvoices(
-  filters: Record<string, string>,
-  pagination: { page: number; perPage: number }
-) {
+export const useInvoices = (filters: FilterValues) => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [meta, setMeta] = useState<PaginationMeta>({ page: 1, perPage: 10, total: 0 });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState<PaginatedResponse<Invoice> | null>(null);
+  const [reloadFlag, setReloadFlag] = useState(0);
 
-  const fetchData = () => {
-    const cleanFilters = Object.fromEntries(
-      Object.entries(filters).filter(([_, v]) => v !== '')
-    );
-
-    const query = {
-      ...cleanFilters,
-      page: pagination.page.toString(),
-      limit: pagination.perPage.toString(),
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const normalizedFilters = normalizeFilters(filters);
+        const response = await api.get('/invoices', { params: normalizedFilters });
+        setInvoices(response.data.data);
+        setPagination(response.data);
+      } catch (err) {
+        setError('Error al cargar las facturas');
+        console.error('Error fetching invoices:', err);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const params = new URLSearchParams(query).toString();
+    fetchInvoices();
+  }, [filters, reloadFlag]);
 
-    setLoading(true);
-    api
-      .get('/invoices?' + params, { headers: { 'Cache-Control': 'no-cache' } })
-      .then((res) => {
-        setInvoices(res.data.data ?? []);
-        setMeta(res.data.meta ?? { page: pagination.page, perPage: pagination.perPage, total: 0 });
-      })
-      .finally(() => setLoading(false));
-  };
+  const refetch = () => setReloadFlag(flag => flag + 1);
 
-  useEffect(fetchData, [filters, pagination]);
-
-  return { invoices, meta, loading, refetch: fetchData };
-}
+  return { invoices, loading, error, pagination, refetch };
+};
 
 export async function markInvoiceAsPaid(id: number, paymentDate: string) {
   try {

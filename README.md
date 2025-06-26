@@ -1,54 +1,70 @@
-# React + TypeScript + Vite
+# Facturas App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación web para la gestión de facturas y proveedores, con autenticación propia basada en JWT.
 
-Currently, two official plugins are available:
+## ¿Qué es Facturas App?
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Facturas App es una solución integral para la administración de facturas y proveedores, pensada para PyMEs y profesionales. Permite registrar, filtrar y gestionar facturas, así como administrar proveedores, todo desde una interfaz moderna y segura.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Funcionalidades principales
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+- **Autenticación de usuarios** con JWT (login/logout)
+- **Gestión de facturas**: alta, listado, filtrado, cambio de estado (pagada, preparada, a pagar)
+- **Gestión de proveedores**: alta y listado
+- **Filtros avanzados** por estado, tipo, proveedor y fechas
+- **Paginación** en el listado de facturas
+- **Interfaz intuitiva y responsiva**
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Endpoints principales
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+### Autenticación
+- `POST /auth/login` — Login de usuario
+- `GET /auth/profile` — Perfil del usuario autenticado
+- `POST /auth/logout` — Logout
+
+### Facturas
+- `GET /invoices` — Listar facturas
+- `POST /invoices` — Crear factura
+- `PATCH /invoices/:id/mark-as-paid` — Marcar factura como pagada
+- `PATCH /invoices/:id` — Actualizar factura
+- `DELETE /invoices/:id` — Eliminar factura
+
+### Proveedores
+- `GET /suppliers` — Listar proveedores
+- `POST /suppliers` — Crear proveedor
+
+---
+
+## Tecnologías utilizadas
+
+- **Frontend:** React + TypeScript + Vite + TailwindCSS
+- **Backend:** Node.js + TypeScript + Express (o NestJS, según implementación)
+- **Autenticación:** JWT (JSON Web Tokens)
+- **Base de datos:** PostgreSQL
+- **Estilos:** TailwindCSS
+- **HTTP Client:** Axios
+
+---
+
+## ¿Cómo correr el proyecto?
+
+1. Clona el repositorio
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+3. Configura las variables de entorno en un archivo `.env` (ver ejemplo `.env.example`)
+4. Inicia la app:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## Licencia
+
+MIT

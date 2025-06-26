@@ -65,9 +65,18 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       {/* Date */}
       <InvoiceDateField register={register} error={errors.date} />
 
+      <div>
+        <label className="block text-sm text-white mb-1">Proveedor</label>
+        <SupplierFilter
+          suppliers={suppliers}
+          selectedSupplierId={typeof watch('supplierId') === 'number' ? watch('supplierId') : null}
+          onChange={(id) => setValue('supplierId', id)}
+        />
+        {errors.supplierId && <p className="text-red-400 text-xs">{errors.supplierId.message}</p>}
+      </div>
+
       {/* Type */}
       <div>
-        <label className="block text-sm text-white mb-1">Type</label>
         <InvoiceTypeToggle
           value={invoiceType}
           onChange={(type: 'A' | 'X') => {
@@ -89,7 +98,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       />
       {invoiceType === 'A' && (
         <EditableAmountInput
-          label="Amount 10.5%"
+          label="Monto IVA 10.5%"
           value={watch('amount_105')}
           onChange={val => setValue('amount_105', val)}
           error={errors.amount_105?.message}
@@ -111,14 +120,6 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         setValue={setValue}
         error={errors.status}
       />
-      <div>
-        <SupplierFilter
-          suppliers={suppliers}
-          selectedSupplierId={typeof watch('supplierId') === 'number' ? watch('supplierId') : null}
-          onChange={(id) => setValue('supplierId', id)}
-        />
-        {errors.supplierId && <p className="text-red-400 text-xs">{errors.supplierId.message}</p>}
-      </div>
 
       {/* Hidden inputs for calculated fields */}
       <div>

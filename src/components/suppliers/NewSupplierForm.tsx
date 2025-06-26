@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCreateSupplier } from '../../hooks/useSupplier';
+import { useSupplier } from '../../hooks/useSupplier';
 
 type SupplierFormData = {
   name: string;
@@ -10,7 +10,7 @@ type SupplierFormData = {
 
 export default function NewSupplierForm() {
   const [formData, setFormData] = useState<SupplierFormData>({ name: '' });
-  const { createSupplier, loading, error } = useCreateSupplier();
+  const { createSupplier, loading } = useSupplier();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,8 +72,6 @@ export default function NewSupplierForm() {
       >
         {loading ? 'Creando...' : 'Crear proveedor'}
       </button>
-
-      {error && <p className="text-red-500 text-sm">{error}</p>}
     </form>
   );
 }

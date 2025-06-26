@@ -17,7 +17,7 @@ export default function InvoicePageWrapper() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
 
-  const { invoices, meta, refetch } = useInvoices(filters, pagination);
+  const { invoices, loading, error, pagination: invoicesPagination, refetch } = useInvoices(filters);
   const { data: suppliers = [] } = useSWRImmutable('/suppliers', fetchSuppliers);
 
   const handleConfirmPaid = async (paymentDate: string) => {
@@ -70,9 +70,9 @@ export default function InvoicePageWrapper() {
       </table>
 
       <PaginationControls
-        page={pagination.page}
-        perPage={meta.perPage}
-        total={meta.total}
+        page={invoicesPagination?.meta?.page ?? 1}
+        perPage={invoicesPagination?.meta?.perPage ?? 10}
+        total={invoicesPagination?.meta?.total ?? 0}
         onPageChange={(newPage) =>
           setPagination((prev) => ({ ...prev, page: newPage }))
         }
