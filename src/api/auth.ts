@@ -50,6 +50,7 @@ export const getProfile = async (): Promise<User> => {
   
   const res = await fetch(`${API_URL}/auth/profile`, {
     headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-store',
   });
   
   if (!res.ok) {
