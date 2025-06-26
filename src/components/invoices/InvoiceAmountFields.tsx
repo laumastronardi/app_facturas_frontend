@@ -13,11 +13,6 @@ const formatCurrency = (value: number | string | undefined): string => {
   }).format(numValue);
 };
 
-// Function to parse currency string back to number
-const parseCurrency = (value: string): number => {
-  return Number(value.replace(/[^\d.-]/g, '')) || 0;
-};
-
 interface InvoiceAmountFieldsProps {
   register: UseFormRegister<InvoiceFormData>;
   watch: UseFormWatch<InvoiceFormData>;
