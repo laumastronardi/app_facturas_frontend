@@ -21,6 +21,11 @@ export const login = async (email: string, password: string) => {
   }
   
   const { user, access_token } = await res.json();
+  
+  if (!user || !access_token) {
+    throw new Error('Invalid response from server');
+  }
+  
   localStorage.setItem('token', access_token);
   return user as User;
 };
@@ -55,7 +60,10 @@ export const getProfile = async (): Promise<User> => {
   
   if (!res.ok) {
     localStorage.removeItem('token');
-    throw new Error('Not authenticated');
+    if (res.status === 401) {
+      throw new Error('Token expired or invalid');
+    }
+    throw new Error('Failed to get profile');
   }
   
   return res.json();
