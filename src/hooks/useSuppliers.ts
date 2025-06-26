@@ -15,7 +15,7 @@ export const useSuppliers = () => {
       
       try {
         const response = await api.get('/suppliers');
-        setSuppliers(response.data.data || []);
+        setSuppliers(response.data || []);
       } catch (err) {
         setError('Error al cargar los proveedores');
         console.error('Error fetching suppliers:', err);
