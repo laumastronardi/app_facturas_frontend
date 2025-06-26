@@ -6,25 +6,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import api from '../../api/axios';
 import { InvoiceTypeToggle } from './InvoiceTypeToggle';
 import { InvoiceDateField } from './InvoiceDateField';
-import { InvoiceAmountFields } from './InvoiceAmountFields';
+import { EditableAmountInput } from './EditableAmountInput';
+import { ReadOnlyAmountInput } from './ReadOnlyAmountInput';
 import { InvoiceStatusField } from './InvoiceStatusField';
 import SupplierFilter from '../suppliers/SuppliersFilter';
 import { useInvoiceCalculations } from '../../hooks/useInvoiceCalculations';
+import { invoiceFormSchema } from '../../validations/invoiceSchema';
 
-const schema = z.object({
-  date: z.string().min(1, 'Date is required'),
-  amount: z.coerce.number().positive('Amount must be positive'),
-  amount_105: z.coerce.number().min(0, 'Amount 10.5% must be non-negative'),
-  total_neto: z.coerce.number().positive('Total neto must be positive'),
-  vat_amount_21: z.coerce.number().min(0),
-  vat_amount_105: z.coerce.number().min(0),
-  total_amount: z.coerce.number().positive('Total amount must be positive'),
-  status: z.enum(['to_pay', 'prepared', 'paid']),
-  supplierId: z.coerce.number().int().positive(),
-  type: z.enum(['A', 'X']),
-}).superRefine(() => {});
+const schema = invoiceFormSchema;
 
-export type InvoiceFormData = z.infer<typeof schema>;
+export type InvoiceFormData = Omit<z.infer<typeof schema>, 'supplierId'> & { supplierId: number | null };
 
 type Supplier = {
   id: number;
@@ -56,6 +47,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       type: 'X',
       date: new Date().toISOString().split('T')[0],
       amount_105: 0,
+      supplierId: null,
       ...defaultValues,
     },
   });
@@ -89,14 +81,28 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       </div>
 
       {/* Amount Fields */}
-      <InvoiceAmountFields
-        register={register}
-        watch={watch}
-        setValue={setValue}
-        errors={errors}
-        invoiceType={invoiceType}
-        calculatedValues={calculatedValues}
+      <EditableAmountInput
+        label={invoiceType === 'A' ? 'Monto IVA 21%' : 'Monto'}
+        value={watch('amount')}
+        onChange={val => setValue('amount', val)}
+        error={errors.amount?.message}
       />
+      {invoiceType === 'A' && (
+        <EditableAmountInput
+          label="Amount 10.5%"
+          value={watch('amount_105')}
+          onChange={val => setValue('amount_105', val)}
+          error={errors.amount_105?.message}
+        />
+      )}
+      <ReadOnlyAmountInput label="Total Neto" value={calculatedValues.total_neto} />
+      {invoiceType === 'A' && (
+        <ReadOnlyAmountInput label="IVA 21%" value={calculatedValues.vat_amount_21} />
+      )}
+      {invoiceType === 'A' && (
+        <ReadOnlyAmountInput label="IVA 10.5%" value={calculatedValues.vat_amount_105} />
+      )}
+      <ReadOnlyAmountInput label="Monto Total" value={calculatedValues.total_amount} />
 
       {/* Status and Supplier Fields */}
       <InvoiceStatusField

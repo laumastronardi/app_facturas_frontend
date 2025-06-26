@@ -7,9 +7,10 @@ type Props = {
   suppliers: Supplier[];
   selectedSupplierId: number | null;
   onChange: (supplierId: number | null) => void;
+  className?: string;
 };
 
-export default function SupplierFilter({ suppliers, selectedSupplierId, onChange }: Props) {
+export default function SupplierFilter({ suppliers, selectedSupplierId, onChange, className = 'w-full' }: Props) {
   const [query, setQuery] = useState('');
 
   const filteredSuppliers =
@@ -26,7 +27,7 @@ export default function SupplierFilter({ suppliers, selectedSupplierId, onChange
 
   return (
     <Combobox value={selectedSupplier} onChange={handleChange}>
-      <div className="relative w-72">
+      <div className={`relative ${className}`}>
         <Combobox.Input
           className="w-full rounded border border-neutral-700 bg-neutral-900 text-white px-3 py-2"
           displayValue={(supplier: Supplier | null) => supplier?.name ?? ''}

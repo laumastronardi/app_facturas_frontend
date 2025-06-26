@@ -31,6 +31,7 @@ export default function InvoiceFilterForm({ onFilter, suppliers }: { onFilter: (
         suppliers={suppliers}
         selectedSupplierId={watch('supplierId') ?? null}
         onChange={(id) => setValue('supplierId', id)}
+        className="w-72"
       />
 
       <select {...register('type')} className="bg-neutral-800 p-2 rounded text-white">
