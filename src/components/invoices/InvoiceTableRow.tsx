@@ -27,7 +27,16 @@ export default function InvoiceTableRow({ invoice, animatedRowId, setAnimatedRow
     <tr className={`border-t border-neutral-800 transition-all duration-500 ${isAnimated ? 'bg-green-900' : ''}`}>
       <td className="p-3">{invoice.date}</td>
       <td className="p-3">{invoice.supplier?.name || '-'}</td>
-      <td className="p-3">{invoice.vat ?? '-'}</td>
+      <td className="p-3">
+        {invoice.type === 'A' ? (
+          <div className="text-xs">
+            <div>21%: ${invoice.vat_amount_21?.toFixed(2) || '0.00'}</div>
+            <div>10.5%: ${invoice.vat_amount_105?.toFixed(2) || '0.00'}</div>
+          </div>
+        ) : (
+          '-'
+        )}
+      </td>
       <td className="p-3">${invoice.amount}</td>
       <td className="p-3">
         <span className={`inline-block px-2 py-1 rounded text-xs font-semibold text-white ${statusColor(invoice.status)} w-24 text-center`}>

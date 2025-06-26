@@ -4,7 +4,11 @@ export type Invoice = {
   id: number;
   date: string;
   amount: number;
-  vat?: number;
+  amount_105: number;
+  total_neto: number;
+  vat_amount_21: number;
+  vat_amount_105: number;
+  total_amount: number;
   status: 'to_pay' | 'prepared' | 'paid';
   type: 'A' | 'X';
   supplier: Supplier;

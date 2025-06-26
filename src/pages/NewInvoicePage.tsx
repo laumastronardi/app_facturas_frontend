@@ -11,12 +11,16 @@ export default function NewInvoicePage() {
     try {
       // recolectamos exactamente los campos que espera tu API
       await api.post('/invoices', {
-        date:        data.date,
-        amount:      data.amount,
-        status:      data.status,
-        supplierId:  data.supplierId,
-        type:        data.type,
-        vat:         data.vat,
+        date:           data.date,
+        amount:         data.amount,
+        amount_105:     data.amount_105,
+        total_neto:     data.total_neto,
+        vat_amount_21:  data.vat_amount_21,
+        vat_amount_105: data.vat_amount_105,
+        total_amount:   data.total_amount,
+        status:         data.status,
+        supplierId:     data.supplierId,
+        type:           data.type,
       });
       navigate('/');
     } catch (err) {
