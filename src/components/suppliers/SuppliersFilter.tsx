@@ -19,8 +19,13 @@ export default function SupplierFilter({ suppliers, selectedSupplierId, onChange
 
   const selectedSupplier = suppliers.find((s) => s.id === selectedSupplierId) ?? null;
 
+  const handleChange = (supplier: Supplier | null) => {
+    onChange(supplier?.id ?? null);
+    setQuery('');
+  };
+
   return (
-    <Combobox value={selectedSupplier} onChange={(supplier) => onChange(supplier?.id ?? null)}>
+    <Combobox value={selectedSupplier} onChange={handleChange}>
       <div className="relative w-72">
         <Combobox.Input
           className="w-full rounded border border-neutral-700 bg-neutral-900 text-white px-3 py-2"

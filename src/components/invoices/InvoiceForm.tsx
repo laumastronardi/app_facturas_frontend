@@ -7,7 +7,8 @@ import api from '../../api/axios';
 import { InvoiceTypeToggle } from './InvoiceTypeToggle';
 import { InvoiceDateField } from './InvoiceDateField';
 import { InvoiceAmountFields } from './InvoiceAmountFields';
-import { InvoiceStatusSupplierFields } from './InvoiceStatusSupplierFields';
+import { InvoiceStatusField } from './InvoiceStatusField';
+import SupplierFilter from '../suppliers/SuppliersFilter';
 import { useInvoiceCalculations } from '../../hooks/useInvoiceCalculations';
 
 const schema = z.object({
@@ -98,13 +99,20 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       />
 
       {/* Status and Supplier Fields */}
-      <InvoiceStatusSupplierFields
+      <InvoiceStatusField
         register={register}
         watch={watch}
         setValue={setValue}
-        errors={errors}
-        suppliers={suppliers}
+        error={errors.status}
       />
+      <div>
+        <SupplierFilter
+          suppliers={suppliers}
+          selectedSupplierId={typeof watch('supplierId') === 'number' ? watch('supplierId') : null}
+          onChange={(id) => setValue('supplierId', id)}
+        />
+        {errors.supplierId && <p className="text-red-400 text-xs">{errors.supplierId.message}</p>}
+      </div>
 
       {/* Hidden inputs for calculated fields */}
       <div>
