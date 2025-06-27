@@ -4,6 +4,8 @@ export type FilterValues = {
   fromDate?: string;
   toDate?: string;
   supplierId?: number | null;
+  sortBy?: 'date' | 'supplier' | 'supplier.name';
+  sortOrder?: 'asc' | 'desc';
 };
 
 export const statusOptions = [
