@@ -67,19 +67,12 @@ export const useAuth = () => {
     }
   };
 
-  // Función para refrescar la autenticación
-  const refreshAuth = useCallback(async () => {
-    setLoading(true);
-    await checkAuth();
-  }, [checkAuth]);
-
   return {
     user,
     loading,
     error,
     login: handleLogin,
     logout: handleLogout,
-    refreshAuth,
     isAuthenticated: !!user,
   };
 }; 

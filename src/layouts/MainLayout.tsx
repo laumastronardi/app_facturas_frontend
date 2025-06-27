@@ -1,7 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../context/AuthContext';
-import { AuthDebug } from '../components/AuthDebug';
 
 export default function MainLayout() {
   const { loading } = useAuth();
@@ -18,7 +17,6 @@ export default function MainLayout() {
     <div className="min-h-screen bg-brand-black text-brand-gray">
       <Navbar />
       <Outlet />
-      <AuthDebug />
     </div>
   );
 }

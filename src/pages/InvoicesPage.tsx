@@ -23,7 +23,7 @@ export default function InvoicePageWrapper() {
     supplierId?: number | null;
   }>({
     page: '1',
-    perPage: '10',
+    perPage: '100',
     sortBy: 'date',
     sortOrder: 'desc',
   });
@@ -85,6 +85,8 @@ export default function InvoicePageWrapper() {
               Proveedor
               {filters.sortBy === 'supplier.name' && (filters.sortOrder === 'asc' ? ' ↑' : ' ↓')}
             </th>
+            <th className="text-left">Tipo</th>
+            <th className="text-left">Total Neto</th>
             <th className="text-left">IVA</th>
             <th className="text-left">Monto</th>
             <th className="text-left">Estado</th>

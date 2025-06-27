@@ -1,6 +1,5 @@
 import React, { createContext, useContext } from 'react';
 import { useAuth as useAuthHook } from '../hooks/useAuth';
-import { AuthPersistence } from '../components/AuthPersistence';
 import type { User } from '../api/auth';
 
 interface AuthContextType {
@@ -9,7 +8,6 @@ interface AuthContextType {
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  refreshAuth: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -20,7 +18,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <AuthContext.Provider value={auth}>
-      <AuthPersistence />
       {children}
     </AuthContext.Provider>
   );
