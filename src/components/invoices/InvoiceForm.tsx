@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Camera, FileText } from 'lucide-react';
 import api from '../../api/axios';
 import { InvoiceTypeToggle } from './InvoiceTypeToggle';
+import { IncomesTaxToggle } from './IncomesTaxToggle';
 import { InvoiceDateField } from './InvoiceDateField';
 import { EditableAmountInput } from './EditableAmountInput';
 import { ReadOnlyAmountInput } from './ReadOnlyAmountInput';
@@ -46,6 +47,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSupplierCreate, setShowSupplierCreate] = useState(false);
   const [suggestedSupplierName, setSuggestedSupplierName] = useState('');
+  const [suggestedSupplierData, setSuggestedSupplierData] = useState<{name: string; cuit?: string} | null>(null);
   const notifications = useNotifications();
   
   const {
@@ -62,6 +64,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       date: new Date().toISOString().split('T')[0],
       amount_105: 0,
       supplierId: null,
+      has_ii_bb: false,
+      ii_bb_amount: 0,
       ...defaultValues,
     },
   });
@@ -110,6 +114,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
       console.log('Setting total_amount:', data.total_amount);
       setValue('total_amount', data.total_amount);
     }
+    if (data.has_ii_bb !== undefined) {
+      console.log('Setting has_ii_bb:', data.has_ii_bb);
+      setValue('has_ii_bb', data.has_ii_bb);
+    }
+    if (data.ii_bb_amount !== undefined) {
+      console.log('Setting ii_bb_amount:', data.ii_bb_amount);
+      setValue('ii_bb_amount', data.ii_bb_amount);
+    }
     
     // Try to find existing supplier or suggest creating new one
     if (data.supplier?.name) {
@@ -126,6 +138,10 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         console.log('Supplier not found, suggesting to create new one');
         // Suggest creating new supplier
         setSuggestedSupplierName(data.supplier.name);
+        setSuggestedSupplierData({
+          name: data.supplier.name,
+          cuit: data.supplier.cuit
+        });
         notifications.info(
           'Proveedor no encontrado',
           `El proveedor "${data.supplier.name}" no está en tu lista. ¿Deseas crearlo?`
@@ -288,6 +304,29 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         {invoiceType === 'A' && (
           <ReadOnlyAmountInput label="IVA 10.5%" value={calculatedValues.vat_amount_105} />
         )}
+
+        {/* Ingresos Brutos - Solo para Facturas A */}
+        {invoiceType === 'A' && (
+          <>
+            <div>
+              <label className="block text-sm text-white mb-2">Ingresos Brutos</label>
+              <IncomesTaxToggle
+                value={watch('has_ii_bb')}
+                onChange={(value) => setValue('has_ii_bb', value)}
+              />
+              <input
+                type="hidden"
+                {...register('has_ii_bb')}
+              />
+            </div>
+            
+            <ReadOnlyAmountInput 
+              label="Impuesto II.BB (4%)" 
+              value={calculatedValues.ii_bb_amount} 
+            />
+          </>
+        )}
+
         <ReadOnlyAmountInput label="Monto Total" value={calculatedValues.total_amount} />
 
         {/* Status and Supplier Fields */}
@@ -311,6 +350,10 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           <input
             type="hidden"
             {...register('vat_amount_105')}
+          />
+          <input
+            type="hidden"
+            {...register('ii_bb_amount')}
           />
           <input
             type="hidden"
@@ -345,9 +388,11 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
           onClose={() => {
             setShowSupplierCreate(false);
             setSuggestedSupplierName('');
+            setSuggestedSupplierData(null);
           }}
           onSupplierCreated={handleSupplierCreated}
-          initialName={suggestedSupplierName}
+          initialName={suggestedSupplierData?.name || suggestedSupplierName}
+          initialCuit={suggestedSupplierData?.cuit || ''}
         />
       )}
     </div>

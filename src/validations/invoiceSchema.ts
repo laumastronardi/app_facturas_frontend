@@ -11,4 +11,6 @@ export const invoiceFormSchema = z.object({
   status: z.enum(['to_pay', 'prepared', 'paid']),
   supplierId: z.number().int().positive().nullable().refine(val => val !== null, { message: 'El proveedor es obligatorio' }),
   type: z.enum(['A', 'X']),
+  has_ii_bb: z.boolean(),
+  ii_bb_amount: z.coerce.number().min(0),
 }).superRefine(() => {});

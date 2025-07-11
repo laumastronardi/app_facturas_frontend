@@ -16,6 +16,8 @@ export interface ProcessedInvoiceData {
   };
   confidence?: number;
   raw_text?: string;
+  has_ii_bb?: boolean;
+  ii_bb_amount?: number;
 }
 
 export interface ImageProcessingResponse {
@@ -60,8 +62,39 @@ export const processInvoiceImage = async (
     // Normalizar respuesta del backend a nuestro formato esperado
     const backendData = response.data;
     
+    // Debug: verificar qué campos de II.BB está enviando el backend
+    console.log('🔍 Backend response structure:', {
+      hasInvoiceData: !!backendData.invoiceData,
+      invoiceDataKeys: backendData.invoiceData ? Object.keys(backendData.invoiceData) : [],
+      has_ii_bb: backendData.invoiceData?.has_ii_bb,
+      ii_bb_amount: backendData.invoiceData?.ii_bb_amount,
+      type: backendData.invoiceData?.type
+    });
+    
     // Si tiene la estructura del backend actual (con invoiceData)
     if (backendData.invoiceData) {
+      // Calcular II.BB automáticamente si el backend detectó que tiene pero no calculó el monto
+      let calculatedIIBB = backendData.invoiceData.ii_bb_amount || 0;
+      let adjustedTotalAmount = backendData.invoiceData.total_amount;
+      
+      // Si detectó que tiene II.BB pero el monto es 0, calcularlo automáticamente
+      if (backendData.invoiceData.has_ii_bb && calculatedIIBB === 0 && backendData.invoiceData.total_neto) {
+        calculatedIIBB = backendData.invoiceData.total_neto * 0.04; // 4%
+        
+        // Recalcular total_amount incluyendo II.BB
+        const vat_21 = backendData.invoiceData.vat_amount_21 || 0;
+        const vat_105 = backendData.invoiceData.vat_amount_105 || 0;
+        adjustedTotalAmount = backendData.invoiceData.total_neto + vat_21 + vat_105 + calculatedIIBB;
+        
+        console.log('🧮 Frontend calculated II.BB and adjusted total:', {
+          total_neto: backendData.invoiceData.total_neto,
+          calculated_ii_bb: calculatedIIBB,
+          original_total: backendData.invoiceData.total_amount,
+          adjusted_total: adjustedTotalAmount,
+          reason: 'Backend detected II.BB but amount was 0'
+        });
+      }
+      
       const normalizedData = {
         success: true,
         data: {
@@ -76,7 +109,11 @@ export const processInvoiceImage = async (
           total_neto: backendData.invoiceData.total_neto,
           vat_amount_21: backendData.invoiceData.vat_amount_21,
           vat_amount_105: backendData.invoiceData.vat_amount_105,
-          total_amount: backendData.invoiceData.total_amount,
+          total_amount: adjustedTotalAmount,
+          
+          // Ingresos brutos
+          has_ii_bb: backendData.invoiceData.has_ii_bb || false,
+          ii_bb_amount: calculatedIIBB,
           
           // Información del proveedor
           supplier: {

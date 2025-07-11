@@ -24,6 +24,45 @@ export const EditExtractedDataModal: React.FC<EditExtractedDataModalProps> = ({
     setErrors({});
   }, [initialData, isOpen]);
 
+  // Calculate II.BB and total when has_ii_bb or total_neto changes (only for type A)
+  useEffect(() => {
+    if (formData.type === 'A' && formData.has_ii_bb && formData.total_neto) {
+      const calculatedIIBB = formData.total_neto * 0.04; // 4%
+      const vat21 = formData.vat_amount_21 || 0;
+      const vat105 = formData.vat_amount_105 || 0;
+      const newTotal = formData.total_neto + vat21 + vat105 + calculatedIIBB;
+      
+      setFormData(prev => ({ 
+        ...prev, 
+        ii_bb_amount: calculatedIIBB,
+        total_amount: newTotal
+      }));
+    } else {
+      // Recalcular total sin II.BB
+      const vat21 = formData.vat_amount_21 || 0;
+      const vat105 = formData.vat_amount_105 || 0;
+      const totalNeto = formData.total_neto || 0;
+      const newTotal = totalNeto + vat21 + vat105;
+      
+      setFormData(prev => ({ 
+        ...prev, 
+        ii_bb_amount: 0,
+        total_amount: newTotal
+      }));
+    }
+  }, [formData.has_ii_bb, formData.total_neto, formData.type, formData.vat_amount_21, formData.vat_amount_105]);
+
+  // Reset II.BB when switching from A to X
+  useEffect(() => {
+    if (formData.type === 'X') {
+      setFormData(prev => ({ 
+        ...prev, 
+        has_ii_bb: false, 
+        ii_bb_amount: 0 
+      }));
+    }
+  }, [formData.type]);
+
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -226,6 +265,41 @@ export const EditExtractedDataModal: React.FC<EditExtractedDataModalProps> = ({
                     placeholder="0.00"
                   />
                 </div>
+
+                {/* Ingresos Brutos - Solo para Facturas A */}
+                {formData.type === 'A' && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Ingresos Brutos
+                      </label>
+                      <select
+                        value={formData.has_ii_bb ? 'true' : 'false'}
+                        onChange={(e) => handleInputChange('has_ii_bb', e.target.value === 'true')}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      >
+                        <option value="false">Sin Ingresos Brutos</option>
+                        <option value="true">Con Ingresos Brutos</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Monto II.BB (4%)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.ii_bb_amount || ''}
+                        onChange={(e) => handleInputChange('ii_bb_amount', parseFloat(e.target.value) || 0)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        placeholder="0.00"
+                        readOnly
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Calculado automáticamente</p>
+                    </div>
+                  </>
+                )}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

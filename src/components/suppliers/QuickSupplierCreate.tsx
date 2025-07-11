@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
 import { X, Plus } from 'lucide-react';
 import { useSupplier } from '../../hooks/useSupplier';
@@ -9,6 +9,7 @@ interface QuickSupplierCreateProps {
   onClose: () => void;
   onSupplierCreated: (supplier: { id: number; name: string }) => void;
   initialName?: string;
+  initialCuit?: string;
 }
 
 export const QuickSupplierCreate: React.FC<QuickSupplierCreateProps> = ({
@@ -16,14 +17,26 @@ export const QuickSupplierCreate: React.FC<QuickSupplierCreateProps> = ({
   onClose,
   onSupplierCreated,
   initialName = '',
+  initialCuit = '',
 }) => {
   const [formData, setFormData] = useState({
     name: initialName,
+    cuit: initialCuit,
     cbu: '',
     paymentTerm: '',
   });
   const { createSupplier, loading } = useSupplier();
   const notifications = useNotifications();
+
+  // Update form data when initial values change
+  useEffect(() => {
+    setFormData({
+      name: initialName,
+      cuit: initialCuit,
+      cbu: '',
+      paymentTerm: '',
+    });
+  }, [initialName, initialCuit, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +49,7 @@ export const QuickSupplierCreate: React.FC<QuickSupplierCreateProps> = ({
     try {
       const supplierData = {
         name: formData.name.trim(),
+        cuit: formData.cuit.trim() || undefined,
         cbu: formData.cbu.trim() || undefined,
         paymentTerm: formData.paymentTerm ? parseInt(formData.paymentTerm) : undefined,
       };
@@ -51,7 +65,7 @@ export const QuickSupplierCreate: React.FC<QuickSupplierCreateProps> = ({
       onClose();
       
       // Reset form
-      setFormData({ name: '', cbu: '', paymentTerm: '' });
+      setFormData({ name: '', cuit: '', cbu: '', paymentTerm: '' });
       
     } catch (error) {
       notifications.error(
@@ -62,7 +76,7 @@ export const QuickSupplierCreate: React.FC<QuickSupplierCreateProps> = ({
   };
 
   const handleClose = () => {
-    setFormData({ name: '', cbu: '', paymentTerm: '' });
+    setFormData({ name: '', cuit: '', cbu: '', paymentTerm: '' });
     onClose();
   };
 
@@ -100,6 +114,19 @@ export const QuickSupplierCreate: React.FC<QuickSupplierCreateProps> = ({
                 placeholder="Nombre del proveedor"
                 required
                 autoFocus
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                CUIT (opcional)
+              </label>
+              <input
+                type="text"
+                value={formData.cuit}
+                onChange={(e) => setFormData(prev => ({ ...prev, cuit: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="XX-XXXXXXXX-X"
               />
             </div>
 

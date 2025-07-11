@@ -154,6 +154,26 @@ export const OCRResultsDisplay: React.FC<OCRResultsDisplayProps> = ({
               </div>
             )}
             
+            {/* Mostrar II.BB para facturas tipo A */}
+            {data.type === 'A' && (
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  II.BB (4%):
+                  {data.has_ii_bb && data.ii_bb_amount !== undefined && data.ii_bb_amount > 0 && (
+                    <span className="ml-1 text-xs text-blue-600 dark:text-blue-400">✓</span>
+                  )}
+                </span>
+                <span className="text-sm font-medium">
+                  {data.has_ii_bb && data.ii_bb_amount !== undefined && data.ii_bb_amount > 0 
+                    ? formatCurrency(data.ii_bb_amount)
+                    : data.has_ii_bb 
+                      ? <span className="text-yellow-600 dark:text-yellow-400">Detectado, calculando...</span>
+                      : <span className="text-gray-500 dark:text-gray-400">No detectado</span>
+                  }
+                </span>
+              </div>
+            )}
+            
             <div className="flex justify-between border-t border-gray-200 dark:border-gray-600 pt-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Total:</span>
               <span className="text-sm font-bold">{formatCurrency(data.total_amount)}</span>

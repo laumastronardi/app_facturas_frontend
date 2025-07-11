@@ -13,4 +13,6 @@ export type Invoice = {
   type: 'A' | 'X';
   supplier: Supplier;
   paymentDate?: string;
+  has_ii_bb: boolean;
+  ii_bb_amount: number;
 };
