@@ -60,7 +60,7 @@ export default function LoginPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="block w-full rounded-md border border-neutral-700 bg-neutral-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-brand-orange placeholder-brand-gray"
+                className="block w-full rounded-md border border-neutral-700 bg-neutral-800 text-white px-3 py-3 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-brand-orange placeholder-brand-gray text-base"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -76,7 +76,7 @@ export default function LoginPage() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="block w-full rounded-md border border-neutral-700 bg-neutral-800 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-brand-orange placeholder-brand-gray"
+                className="block w-full rounded-md border border-neutral-700 bg-neutral-800 text-white px-3 py-3 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-brand-orange placeholder-brand-gray text-base"
                 placeholder="Contraseña"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -93,7 +93,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-2 px-4 rounded-md text-white bg-brand-orange hover:bg-orange-500 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex justify-center py-3 px-4 rounded-md text-white bg-brand-orange hover:bg-orange-500 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed text-base"
           >
             {loading ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>

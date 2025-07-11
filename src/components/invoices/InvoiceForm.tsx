@@ -194,30 +194,30 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   return (
     <div className="space-y-6">
       {/* Input Mode Toggle */}
-      <div className="flex gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
+      <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg w-full">
         <button
           type="button"
           onClick={() => setInputMode('manual')}
-          className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md transition-colors ${
+          className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-md transition-colors text-sm ${
             inputMode === 'manual'
               ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
           }`}
         >
           <FileText className="w-4 h-4" />
-          Manual
+          <span className="hidden sm:inline">Manual</span>
         </button>
         <button
           type="button"
           onClick={() => setInputMode('ai')}
-          className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md transition-colors ${
+          className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-md transition-colors text-sm ${
             inputMode === 'ai'
               ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
           }`}
         >
           <Camera className="w-4 h-4" />
-          Escáner IA
+          <span className="hidden sm:inline">Escáner IA</span>
         </button>
       </div>
 
@@ -246,7 +246,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
         <div>
           <label className="block text-sm text-white mb-1">Proveedor</label>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <div className="flex-1">
               <SupplierFilter
                 suppliers={suppliers}
@@ -258,14 +258,14 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               <button
                 type="button"
                 onClick={() => setShowSupplierCreate(true)}
-                className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm whitespace-nowrap"
+                className="px-3 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm font-medium"
                 title={`Crear proveedor: ${suggestedSupplierName}`}
               >
                 + Crear
               </button>
             )}
           </div>
-          {errors.supplierId && <p className="text-red-400 text-xs">{errors.supplierId.message}</p>}
+          {errors.supplierId && <p className="text-red-400 text-xs mt-1">{errors.supplierId.message}</p>}
         </div>
 
         {/* Type */}
@@ -283,27 +283,29 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         </div>
 
         {/* Amount Fields */}
-        <EditableAmountInput
-          label={invoiceType === 'A' ? 'Monto IVA 21%' : 'Monto'}
-          value={watch('amount')}
-          onChange={val => setValue('amount', val)}
-          error={errors.amount?.message}
-        />
-        {invoiceType === 'A' && (
+        <div className="space-y-4">
           <EditableAmountInput
-            label="Monto IVA 10.5%"
-            value={watch('amount_105')}
-            onChange={val => setValue('amount_105', val)}
-            error={errors.amount_105?.message}
+            label={invoiceType === 'A' ? 'Monto IVA 21%' : 'Monto'}
+            value={watch('amount')}
+            onChange={val => setValue('amount', val)}
+            error={errors.amount?.message}
           />
-        )}
-        <ReadOnlyAmountInput label="Total Neto" value={calculatedValues.total_neto} />
-        {invoiceType === 'A' && (
-          <ReadOnlyAmountInput label="IVA 21%" value={calculatedValues.vat_amount_21} />
-        )}
-        {invoiceType === 'A' && (
-          <ReadOnlyAmountInput label="IVA 10.5%" value={calculatedValues.vat_amount_105} />
-        )}
+          {invoiceType === 'A' && (
+            <EditableAmountInput
+              label="Monto IVA 10.5%"
+              value={watch('amount_105')}
+              onChange={val => setValue('amount_105', val)}
+              error={errors.amount_105?.message}
+            />
+          )}
+          <ReadOnlyAmountInput label="Total Neto" value={calculatedValues.total_neto} />
+          {invoiceType === 'A' && (
+            <ReadOnlyAmountInput label="IVA 21%" value={calculatedValues.vat_amount_21} />
+          )}
+          {invoiceType === 'A' && (
+            <ReadOnlyAmountInput label="IVA 10.5%" value={calculatedValues.vat_amount_105} />
+          )}
+        </div>
 
         {/* Ingresos Brutos - Solo para Facturas A */}
         {invoiceType === 'A' && (
@@ -365,7 +367,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-brand-orange hover:bg-orange-500 text-white px-4 py-2 rounded-lg transition disabled:opacity-50"
+          className="w-full bg-brand-orange hover:bg-orange-500 disabled:bg-orange-300 text-white px-6 py-3 rounded-lg transition-colors font-medium text-base"
         >
           {isSubmitting ? 'Guardando...' : 'Guardar Factura'}
         </button>

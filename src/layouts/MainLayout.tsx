@@ -16,7 +16,9 @@ export default function MainLayout() {
   return (
     <div className="min-h-screen bg-brand-black text-brand-gray">
       <Navbar />
-      <Outlet />
+      <div className="pb-4 md:pb-0">
+        <Outlet />
+      </div>
     </div>
   );
 }
