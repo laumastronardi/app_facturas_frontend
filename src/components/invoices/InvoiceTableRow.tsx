@@ -24,7 +24,7 @@ export default function InvoiceTableRow({ invoice, animatedRowId, setAnimatedRow
   const isAnimated = animatedRowId === invoice.id;
 
   return (
-    <tr className={`border-t border-neutral-800 transition-all duration-500 ${isAnimated ? 'bg-green-900' : ''}`}>
+    <tr className={`border-t border-neutral-800 transition-all duration-500 hover:bg-neutral-800/60 ${isAnimated ? 'bg-green-900' : ''}`}>
       <td className="p-3">{invoice.date}</td>
       <td className="p-3">{invoice.supplier?.name || '-'}</td>
       <td className="p-3">

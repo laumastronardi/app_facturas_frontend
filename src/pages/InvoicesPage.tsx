@@ -88,7 +88,7 @@ export default function InvoicePageWrapper() {
             <th className="text-left">Tipo</th>
             <th className="text-left">Total Neto</th>
             <th className="text-left">IVA</th>
-            <th className="text-left">Monto</th>
+            <th className="text-left">Monto Total</th>
             <th className="text-left">Estado</th>
             <th className="text-left">Acciones</th>
           </tr>
